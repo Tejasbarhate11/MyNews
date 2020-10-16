@@ -2,18 +2,19 @@ package com.barhatetejas.mynews;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -94,8 +95,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         if(keyword.length()>0){
             call = apiInterface.getNewsSearch(keyword,language, "publishedAt",API_KEY);
+            topHeadlines.setText("Search results");
+
         }else{
             call = apiInterface.getNews(country,API_KEY);
+            topHeadlines.setText("Top headlines for you!");
         }
 
 
@@ -162,8 +166,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 intent.putExtra("source",  article.getSource().getName());
                 intent.putExtra("author",  article.getAuthor());
 
-                Pair<View,String> pair = Pair.create((View)imageView, ViewCompat.getTransitionName(imageView));
-                ActivityOptionsCompat optionsCompat = makeSceneTransitionAnimation(MainActivity.this,pair);
+                Pair<View,String> pair = Pair.create((View) imageView,"img");
+                ActivityOptions optionsCompat = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this,pair);
                 startActivity(intent, optionsCompat.toBundle());
 
 
@@ -181,6 +185,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         MenuItem searchMenuItem = menu.findItem(R.id.action_search);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint("Search Latest News");
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                onLoadingSwipeRefresh("");
+                return false;
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -222,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
 
+
     private void showErrorMessage(int imageView, String title, String message){
         if(!articles.isEmpty()){
             articles.clear();
@@ -242,4 +255,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
 
     }
+
+
 }

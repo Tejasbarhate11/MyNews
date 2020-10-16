@@ -2,6 +2,7 @@ package com.barhatetejas.mynews;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Bundle;
@@ -21,7 +22,7 @@ public class SplashScreen extends AppCompatActivity {
 
     //Views
     private ImageView logo;
-    private TextView name;
+    private TextView name,slogan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +35,19 @@ public class SplashScreen extends AppCompatActivity {
 
         logo = findViewById(R.id.logo);
         name = findViewById(R.id.name);
+        slogan = findViewById(R.id.slogan);
 
         logo.setAnimation(top);
         name.setAnimation(bottom);
+        slogan.setAnimation(bottom);
 
 
-        final boolean b = new Handler().postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(SplashScreen.this, MainActivity.class);
-                startActivity(intent);
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(SplashScreen.this,slogan,"top_headlines");
+                startActivity(intent,options.toBundle());
                 finish();
             }
         }, SPLASH_SCREEN);
